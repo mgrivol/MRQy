@@ -89,29 +89,51 @@ def extract_tags(inf, tag_data):
     return tags
 
 
-def find_scans(root, max_num_images):
+
+def find_scans(root: Path, max_num_images: int):
     files = []
 
-    for dirpath, _, filenames in os.walk(root):
-        for filename in filenames:
+    if root.is_file():
+        with open(root, "r") as fp:
+            for line in fp.readlines():
 
-            if not filename.endswith(('.dcm', '.mha', '.nii', '.gz', '.mat')):
-                continue
+                filename = Path(line.strip())
+                if not filename.endswith(('.dcm', '.mha', '.nii', '.nii.gz', '.mat')):
+                    continue
 
-            files.append(str(Path(dirpath) / filename))
+                files.append(filename)
 
-            if max_num_images is not None and len(files) == max_num_images:
-                return files
+                if max_num_images is not None and len(files) == max_num_images:
+                    return files
+
+    elif root.is_dir():
+        for dirpath, _, filenames in os.walk(root):
+            for filename in filenames:
+                if not filename.endswith(('.dcm', '.mha', '.nii', '.nii.gz', '.mat')):
+                    continue
+
+                filepath = Path(dirpath) / filename
+                if not filepath.is_file():
+                    continue
+
+                files.append(str(filepath))
+
+                if max_num_images is not None and len(files) == max_num_images:
+                    return files
+
+    else:
+        raise ValueError(f"root path must be a text file or directory, got: {root}")
 
     return files
 
 
-def input_data(root, max_num_images):
+def input_data(root: Path, max_num_images: int):
     files = find_scans(root, max_num_images)
+    print(f"Found {len(files)} files in {root}")
         
     dicom_files = [i for i in files if i.endswith('.dcm')]
     mha_files = [i for i in files if i.endswith('.mha')]
-    nifti_files = [i for i in files if i.endswith('.nii') or i.endswith('.gz')]
+    nifti_files = [i for i in files if i.endswith('.nii') or i.endswith('.nii.gz')]
     mat_files = [i for i in files if i.endswith('.mat')]
 
     def extract_subject_id(filename):
