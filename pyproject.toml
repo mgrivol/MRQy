@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools >= 64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mrqy"
+dynamic = ["version"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["mrqy"]
+
+[project.scripts]
+radqy = "mrqy:radqy"

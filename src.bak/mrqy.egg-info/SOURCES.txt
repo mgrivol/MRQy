@@ -1,0 +1,12 @@
+LICENSE.txt
+README.md
+setup.py
+src/mrqy/QC.py
+src/mrqy/QC4d.py
+src/mrqy/QCF.py
+src/mrqy/__init__.py
+src/mrqy.egg-info/PKG-INFO
+src/mrqy.egg-info/SOURCES.txt
+src/mrqy.egg-info/dependency_links.txt
+src/mrqy.egg-info/top_level.txt
+tests/test_QC.py
