@@ -94,19 +94,26 @@ def find_scans(root: Path, max_num_images: int):
     files = []
 
     if root.is_file():
+        print("Reading scans from text file.")
+
         with open(root, "r") as fp:
             for line in fp.readlines():
 
-                filename = Path(line.strip())
-                if not filename.endswith(('.dcm', '.mha', '.nii', '.nii.gz', '.mat')):
+                filepath = line.strip()
+                if not filepath.endswith(('.dcm', '.mha', '.nii', '.nii.gz', '.mat')):
                     continue
 
-                files.append(filename)
+                if not Path(filepath).is_file():
+                    continue
+
+                files.append(filepath)
 
                 if max_num_images is not None and len(files) == max_num_images:
                     return files
 
     elif root.is_dir():
+        print("Reading scans from directory.")
+
         for dirpath, _, filenames in os.walk(root):
             for filename in filenames:
                 if not filename.endswith(('.dcm', '.mha', '.nii', '.nii.gz', '.mat')):
@@ -114,6 +121,7 @@ def find_scans(root: Path, max_num_images: int):
 
                 filepath = Path(dirpath) / filename
                 if not filepath.is_file():
+                    # safety check in case directory name ends with file extension
                     continue
 
                 files.append(str(filepath))
